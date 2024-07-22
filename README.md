@@ -8,3 +8,11 @@
 - dev -> @types/node
 - dev -> jest
 - typescript
+
+
+## express (construcao de API)
+- npm i express
+- npm i @types/express --save-dev
+
+## body-parser (serializacao e deserializacao de objetos)
+- npm i body-parser
