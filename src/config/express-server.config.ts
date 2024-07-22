@@ -1,28 +1,34 @@
 import bodyParser from 'body-parser'
 import express from 'express'
 import { Express } from 'express-serve-static-core'
+import { RoutesRegistryConfig } from './routes-registry.config'
 
 export class ExpressServerConfig {
     private app: Express
     private readonly PORT = 3000
-
+    private routesRegistryConfig: RoutesRegistryConfig
+    
     constructor() {
         this.app = express()
+        this.routesRegistryConfig = new RoutesRegistryConfig(this.app)
     }
 
     basicConfig(): ExpressServerConfig {
-        // config de json para texto e texto para json
         this.app.use(bodyParser.json())
         this.app.use(bodyParser.urlencoded({ extended: false }))
         return this
     }
 
     routesRegistry(): ExpressServerConfig {
-        //primeira rota
-        this.app.get('/api/products', (request, response) => {
-            console.log('a rota foi invocada', request.query.test);
-            return response.status(200).json({ message: 'api funcionando corretamente'})
+
+        // permitindo SameOriginPolicy
+        this.app.use(function(req, res, next) {
+            res.header('Access-Control-Allow-Origin', '*')
+            res.header("Access-Control-Allow-Headers", '*')
+            next()
         })
+
+        this.routesRegistryConfig.register()
 
         return this
     }
