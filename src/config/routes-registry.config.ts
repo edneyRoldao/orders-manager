@@ -11,6 +11,12 @@ export class RoutesRegistryConfig {
 
     register() {
         this.app.get('/api/products', this.productController.getProducts)
+        this.app.get('/api/products/:code', this.productController.getProductByCode)
+        this.app.put('/api/products/:code', this.productController.updateProduct)
+        this.app.patch('/api/products/:code/active', this.productController.activeProduct)
+        this.app.patch('/api/products/:code/deactivate', this.productController.deactivateProduct)
+        this.app.post('/api/products', this.productController.createProduct)
+        this.app.delete('/api/products/:code', this.productController.deleteProductByCode)
     }
 
 }
