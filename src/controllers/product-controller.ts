@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
 import { Product } from '../models/product'
+import { ProductRepository } from '../repositories/product.repository'
+import { DatasourceConfig } from '../config/datasource.config'
 
 let products: Product[] = [
     new Product("123456", "note HP", 12000, 10, true),
@@ -14,14 +16,18 @@ let products: Product[] = [
     new Product("012345", "note Sony", 16000, 4, false)
 ]
 
+const datasource = new DatasourceConfig()
+const productRepository = new ProductRepository(datasource)
+
 export class ProductController {
 
-    getProducts(req: Request, res: Response) {
+    async getProducts(req: Request, res: Response) {
+        const products = await productRepository.getProducts()
         return res.status(200).json(products)    
     }
 
     getProductByCode(req: Request, res: Response) {
-        const product = this.getProduct(req)
+        const product = getProduct(req)
 
         if (!!product)
             return res.status(200).json(product)
@@ -30,7 +36,7 @@ export class ProductController {
     }
 
     activeProduct(req: Request, res: Response) {
-        const product = this.getProduct(req)
+        const product = getProduct(req)
 
         if (!!product) {
             product.setActive(true)
@@ -41,7 +47,7 @@ export class ProductController {
     }
 
     deactivateProduct(req: Request, res: Response) {
-        const product = this.getProduct(req)
+        const product = getProduct(req)
 
         if (!!product) {
             product.setActive(false)
@@ -63,7 +69,7 @@ export class ProductController {
     }
 
     updateProduct(req: Request, res: Response) {
-        const product = this.getProduct(req)
+        const product = getProduct(req)
 
         if (!!product) {
             product.updateProduct(req.body)
@@ -74,7 +80,7 @@ export class ProductController {
     }
 
     deleteProductByCode(req: Request, res: Response) {
-        const product = this.getProduct(req)
+        const product = getProduct(req)
 
         if (!!product) {
             products = products.filter(item => item.getCode() !== product.getCode())
@@ -84,9 +90,9 @@ export class ProductController {
         return res.status(404).json({ message: 'product not found'})
     }
 
-    private getProduct(req: Request): any {
-        const productCode = req.params.code
-        return products.find(item => item.getCode() === productCode)
-    }
+}
 
+function getProduct(req: Request): any {
+    const productCode = req.params.code
+    return products.find(item => item.getCode() === productCode)
 }
