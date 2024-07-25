@@ -3,19 +3,6 @@ import { Product } from '../models/product'
 import { ProductRepository } from '../repositories/product.repository'
 import { DatasourceConfig } from '../config/datasource.config'
 
-let products: Product[] = [
-    new Product("123456", "note HP", 12000, 10, true),
-    new Product("234567", "note Dell", 15000, 5, true),
-    new Product("345678", "note Lenovo", 13000, 8, false),
-    new Product("456789", "note Asus", 14000, 12, true),
-    new Product("567890", "note Acer", 11000, 20, false),
-    new Product("678901", "note Apple", 20000, 7, true),
-    new Product("789012", "note Samsung", 12500, 15, true),
-    new Product("890123", "note MSI", 13500, 9, false),
-    new Product("901234", "note Toshiba", 10000, 6),
-    new Product("012345", "note Sony", 16000, 4, false)
-]
-
 const datasource = new DatasourceConfig()
 const productRepository = new ProductRepository(datasource)
 
@@ -26,8 +13,9 @@ export class ProductController {
         return res.status(200).json(products)    
     }
 
-    getProductByCode(req: Request, res: Response) {
-        const product = getProduct(req)
+    async getProductByCode(req: Request, res: Response) {
+        const code = req.params['code']
+        const product = await productRepository.getProductByCode(code)
 
         if (!!product)
             return res.status(200).json(product)
@@ -35,32 +23,34 @@ export class ProductController {
         return res.status(404).json({ message: 'product not found'})
     }
 
-    activeProduct(req: Request, res: Response) {
-        const product = getProduct(req)
+    async activeProduct(req: Request, res: Response) {
+        const code = req.params['code']
 
-        if (!!product) {
-            product.setActive(true)
-            return res.status(204).json()
-        }
-        
-        return res.status(404).json({ message: 'product not found'})
+        try {
+            await productRepository.activateOrDeactivateProduct(code, true)
+            return res.status(200).json({ message: 'product has been activated'})
+
+        } catch (error: any) {
+            return res.status(404).json({ message: error.message })            
+        }        
     }
 
-    deactivateProduct(req: Request, res: Response) {
-        const product = getProduct(req)
+    async deactivateProduct(req: Request, res: Response) {
+        const code = req.params['code']
 
-        if (!!product) {
-            product.setActive(false)
-            return res.status(204).json()
-        }
-        
-        return res.status(404).json({ message: 'product not found'})
+        try {
+            await productRepository.activateOrDeactivateProduct(code, false)
+            return res.status(200).json({ message: 'product has been deactivated'})
+
+        } catch (error: any) {
+            return res.status(404).json({ message: error.message })            
+        }        
     }
 
-    createProduct(req: Request, res: Response) {
+    async createProduct(req: Request, res: Response) {
         try {
             const product = Product.createProduct(req.body)
-            products.push(product)
+            await productRepository.createProduct(product)
             return res.status(201).json()
             
         } catch (error: any) {
@@ -68,31 +58,27 @@ export class ProductController {
         }
     }
 
-    updateProduct(req: Request, res: Response) {
-        const product = getProduct(req)
+    async updateProduct(req: Request, res: Response) {
+        const body = req.body
+        const code = req.params.code
 
-        if (!!product) {
-            product.updateProduct(req.body)
+        try {
+            await productRepository.updateProduct(code, body)
             return res.status(204).json()
+        } catch (error: any) {
+            return res.status(400).json({ message: error.message})
         }
-
-        return res.status(404).json({ message: 'product not found'})
     }
 
-    deleteProductByCode(req: Request, res: Response) {
-        const product = getProduct(req)
+    async deleteProductByCode(req: Request, res: Response) {
+        const code = req.params['code']
+        try {
+            await productRepository.deleteProduct(code)
+            return res.status(200).json({ message: 'product has been deleted'})
 
-        if (!!product) {
-            products = products.filter(item => item.getCode() !== product.getCode())
-            return res.status(204).json()
-        }
-        
-        return res.status(404).json({ message: 'product not found'})
+        } catch (error: any) {
+            return res.status(404).json({ message: error.message })            
+        }        
     }
 
-}
-
-function getProduct(req: Request): any {
-    const productCode = req.params.code
-    return products.find(item => item.getCode() === productCode)
 }
