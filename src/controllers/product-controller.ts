@@ -2,9 +2,11 @@ import { Request, Response } from 'express'
 import { Product } from '../models/product'
 import { ProductRepository } from '../repositories/product.repository'
 import { DatasourceConfig } from '../config/datasource.config'
+import { CategoryRepository } from '../repositories/category.repository'
 
 const datasource = new DatasourceConfig()
 const productRepository = new ProductRepository(datasource)
+const categoryRepository = new CategoryRepository(datasource)
 
 export class ProductController {
 
@@ -77,8 +79,17 @@ export class ProductController {
             return res.status(200).json({ message: 'product has been deleted'})
 
         } catch (error: any) {
-            return res.status(404).json({ message: error.message })            
+            return res.status(400).json({ message: error.message })            
         }        
+    }
+
+    async getCategories(req: Request, res: Response) {
+        try {
+            const categories =  await categoryRepository.getAll()
+            return res.status(200).json(categories)
+        } catch (error: any) {
+            return res.status(500).json({ message: error.message })                        
+        }
     }
 
 }

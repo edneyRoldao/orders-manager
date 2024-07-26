@@ -5,7 +5,8 @@ export class Product {
     constructor(readonly code: string,
                 readonly name: string, 
                 readonly value: number, 
-                readonly stock: number, 
+                readonly stock: number,
+                readonly categoryId: number,
                 readonly active: boolean) {}
 
     static createProduct(body: any): Product {
@@ -15,14 +16,8 @@ export class Product {
 
         const code = crypto.randomUUID()
 
-        const product = new Product(code, body.name, body.value, body.stock, true)
+        const product = new Product(code, body.name, body.value, body.stock, body.categoryId, true)
         return product
     }
-
-    // updateProduct(body: any): void {
-    //     this.setName(body.name)
-    //     this.setValue(body.value)
-    //     this.setStock(body.stock)
-    // }
 
 }
