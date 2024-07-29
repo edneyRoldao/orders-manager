@@ -4,20 +4,34 @@ import { ProductRepository } from '../repositories/product.repository'
 import { DatasourceConfig } from '../config/datasource.config'
 import { CategoryRepository } from '../repositories/category.repository'
 
-const datasource = new DatasourceConfig()
-const productRepository = new ProductRepository(datasource)
-const categoryRepository = new CategoryRepository(datasource)
-
 export class ProductController {
+    
+    productRepository: ProductRepository
+    categoryRepository: CategoryRepository
+    
+    constructor () {
+        const datasource = new DatasourceConfig()
+        this.productRepository = new ProductRepository(datasource)
+        this.categoryRepository = new CategoryRepository(datasource)
 
+        this.getProducts = this.getProducts.bind(this)
+        this.getProductByCode = this.getProductByCode.bind(this)
+        this.activeProduct = this.activeProduct.bind(this)
+        this.deactivateProduct = this.deactivateProduct.bind(this)
+        this.createProduct = this.createProduct.bind(this)
+        this.updateProduct = this.updateProduct.bind(this)
+        this.deleteProductByCode = this.deleteProductByCode.bind(this)
+        this.getCategories = this.getCategories.bind(this)
+    }
+    
     async getProducts(req: Request, res: Response) {
-        const products = await productRepository.getProducts()
+        const products = await this.productRepository.getProducts()
         return res.status(200).json(products)    
     }
 
     async getProductByCode(req: Request, res: Response) {
         const code = req.params['code']
-        const product = await productRepository.getProductByCode(code)
+        const product = await this.productRepository.getProductByCode(code)
 
         if (!!product)
             return res.status(200).json(product)
@@ -29,7 +43,7 @@ export class ProductController {
         const code = req.params['code']
 
         try {
-            await productRepository.activateOrDeactivateProduct(code, true)
+            await this.productRepository.activateOrDeactivateProduct(code, true)
             return res.status(200).json({ message: 'product has been activated'})
 
         } catch (error: any) {
@@ -41,7 +55,7 @@ export class ProductController {
         const code = req.params['code']
 
         try {
-            await productRepository.activateOrDeactivateProduct(code, false)
+            await this.productRepository.activateOrDeactivateProduct(code, false)
             return res.status(200).json({ message: 'product has been deactivated'})
 
         } catch (error: any) {
@@ -52,7 +66,7 @@ export class ProductController {
     async createProduct(req: Request, res: Response) {
         try {
             const product = Product.createProduct(req.body)
-            await productRepository.createProduct(product)
+            await this.productRepository.createProduct(product)
             return res.status(201).json()
             
         } catch (error: any) {
@@ -65,7 +79,7 @@ export class ProductController {
         const code = req.params.code
 
         try {
-            await productRepository.updateProduct(code, body)
+            await this.productRepository.updateProduct(code, body)
             return res.status(204).json()
         } catch (error: any) {
             return res.status(400).json({ message: error.message})
@@ -75,7 +89,7 @@ export class ProductController {
     async deleteProductByCode(req: Request, res: Response) {
         const code = req.params['code']
         try {
-            await productRepository.deleteProduct(code)
+            await this.productRepository.deleteProduct(code)
             return res.status(200).json({ message: 'product has been deleted'})
 
         } catch (error: any) {
@@ -85,7 +99,7 @@ export class ProductController {
 
     async getCategories(req: Request, res: Response) {
         try {
-            const categories =  await categoryRepository.getAll()
+            const categories =  await this.categoryRepository.getAll()
             return res.status(200).json(categories)
         } catch (error: any) {
             return res.status(500).json({ message: error.message })                        

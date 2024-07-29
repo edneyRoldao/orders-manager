@@ -19,3 +19,7 @@
 
 ## mysql2
 - npm i mysql2
+
+## Axios (para integracao entre sistemas via REST)
+- npm i axios
+- npm i @types/axios --save-dev

@@ -1,6 +1,6 @@
 import express from 'express'
 import { Router } from 'express-serve-static-core'
-import { ProductController } from '../controllers/product-controller'
+import { ProductController } from '../controllers/product.controller'
 
 const router: Router = express.Router()
 const controller = new ProductController()
