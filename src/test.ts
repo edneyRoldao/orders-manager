@@ -1,6 +1,9 @@
-function query (stmt: string, ...params: any[]) {
-    console.log(stmt);
-    console.log(params);    
+// metodos recursivos (o metodo chama ele mesmo)
+
+function loopRecursivo(list: any[], index: number) {
+    if (list.length == index) return // condicao de parada do recursivo
+    console.log(list[index]);
+    loopRecursivo(list, index + 1)
 }
 
-query('select * from products p where code = ? and id = ?', '123456', 'abcdef', 13454, true)
+loopRecursivo(['banana', 'maca', 'uva', 'pera'], 0)
