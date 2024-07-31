@@ -1,9 +1,8 @@
-// metodos recursivos (o metodo chama ele mesmo)
 
-function loopRecursivo(list: any[], index: number) {
-    if (list.length == index) return // condicao de parada do recursivo
-    console.log(list[index]);
-    loopRecursivo(list, index + 1)
-}
+// variaveis estáticas
 
-loopRecursivo(['banana', 'maca', 'uva', 'pera'], 0)
+// pertence a class e nao ao objeto
+// o valor é compartilhado entre todos os objetos
+
+// DI - dependency injection
+// DI - dependency inversion
