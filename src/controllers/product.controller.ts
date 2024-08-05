@@ -1,19 +1,16 @@
 import { Request, Response } from 'express'
 import { Product } from '../models/product'
-import { ProductRepository } from '../repositories/product.repository'
-import { DatasourceConfig } from '../config/datasource.config'
-import { CategoryRepository } from '../repositories/category.repository'
+import { Inject } from '../config/container.config'
+import { ProductService } from '../services/product.service'
+import { ProductResponseDTO } from '../dto/product-response.dto'
+import { ProductRequestDTO } from '../dto/product-request.dto'
 
 export class ProductController {
-    
-    productRepository: ProductRepository
-    categoryRepository: CategoryRepository
+
+    @Inject('productSvc')
+    service!: ProductService
     
     constructor () {
-        const datasource = new DatasourceConfig()
-        this.productRepository = new ProductRepository(datasource)
-        this.categoryRepository = new CategoryRepository(datasource)
-
         this.getProducts = this.getProducts.bind(this)
         this.getProductByCode = this.getProductByCode.bind(this)
         this.activeProduct = this.activeProduct.bind(this)
@@ -25,25 +22,31 @@ export class ProductController {
     }
     
     async getProducts(req: Request, res: Response) {
-        const products = await this.productRepository.getProducts()
+        const products: ProductResponseDTO[] = await this.service.getProducts()
         return res.status(200).json(products)    
     }
 
     async getProductByCode(req: Request, res: Response) {
-        const code = req.params['code']
-        const product = await this.productRepository.getProductByCode(code)
+        try {
+            const code = req.params['code']
+            const product = await this.service.getProductByCode(code)
+    
+            if (!!product)
+                return res.status(200).json(product)
+            
+            return res.status(404).json({ message: 'product not found'})
+                
+        } catch (error) {
+            
+        }
 
-        if (!!product)
-            return res.status(200).json(product)
-        
-        return res.status(404).json({ message: 'product not found'})
     }
 
     async activeProduct(req: Request, res: Response) {
         const code = req.params['code']
 
         try {
-            await this.productRepository.activateOrDeactivateProduct(code, true)
+            await this.service.activateOrDeactivateProduct(code, true)
             return res.status(200).json({ message: 'product has been activated'})
 
         } catch (error: any) {
@@ -55,7 +58,7 @@ export class ProductController {
         const code = req.params['code']
 
         try {
-            await this.productRepository.activateOrDeactivateProduct(code, false)
+            await this.service.activateOrDeactivateProduct(code, false)
             return res.status(200).json({ message: 'product has been deactivated'})
 
         } catch (error: any) {
@@ -65,8 +68,8 @@ export class ProductController {
 
     async createProduct(req: Request, res: Response) {
         try {
-            const product = Product.createProduct(req.body)
-            await this.productRepository.createProduct(product)
+            const product: ProductRequestDTO = req.body
+            await this.service.createProduct(product)
             return res.status(201).json()
             
         } catch (error: any) {
@@ -74,12 +77,11 @@ export class ProductController {
         }
     }
 
-    async updateProduct(req: Request, res: Response) {
-        const body = req.body
-        const code = req.params.code
-
+    async updateProduct(req: Request, res: Response) {        
         try {
-            await this.productRepository.updateProduct(code, body)
+            const code = req.params.code
+            const product: ProductRequestDTO = req.body
+            await this.service.updateProduct(code, product)
             return res.status(204).json()
         } catch (error: any) {
             return res.status(400).json({ message: error.message})
@@ -87,19 +89,21 @@ export class ProductController {
     }
 
     async deleteProductByCode(req: Request, res: Response) {
-        const code = req.params['code']
         try {
-            await this.productRepository.deleteProduct(code)
+            const code = req.params['code']
+            await this.service.deleteProduct(code)
             return res.status(200).json({ message: 'product has been deleted'})
 
         } catch (error: any) {
-            return res.status(400).json({ message: error.message })            
+            let httpStatus = 400
+            if (error.message.includes('not found')) httpStatus = 404
+            return res.status(httpStatus).json({ message: error.message })       
         }        
     }
 
     async getCategories(req: Request, res: Response) {
         try {
-            const categories =  await this.categoryRepository.getAll()
+            const categories =  await this.service.getAllCategories()
             return res.status(200).json(categories)
         } catch (error: any) {
             return res.status(500).json({ message: error.message })                        
