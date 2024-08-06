@@ -8,7 +8,8 @@ export class MySqlAdapter implements Datasource {
 
     constructor() {
         const connectionPool = mysql.createPool({
-            host: '192.168.176.2',
+            host: '127.0.0.1',
+            // host: '192.168.176.2',
             port: 3306,
             user: 'root',
             password: 'root',
@@ -32,7 +33,7 @@ export class MySqlAdapter implements Datasource {
             return await conn.query(statement, params)
 
         } catch (error) {
-            console.error(error)
+            throw error
         } finally {
             conn.release()
         }
