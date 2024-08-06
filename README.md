@@ -23,3 +23,6 @@
 ## Axios (para integracao entre sistemas via REST)
 - npm i axios
 - npm i @types/axios --save-dev
+
+## dotenv para gerenciamento das variaves de ambiente
+- npm i dotenv

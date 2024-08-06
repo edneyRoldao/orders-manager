@@ -5,7 +5,7 @@ import { RoutesRegistryConfig } from './routes-registry.config'
 
 export class ExpressServerConfig {
     private app: Express
-    private readonly PORT = 3000
+    private readonly PORT = process.env.APP_PORT || 3000
     private routesRegistryConfig: RoutesRegistryConfig
     
     constructor() {
