@@ -2,10 +2,10 @@ import bodyParser from 'body-parser'
 import express from 'express'
 import { Express } from 'express-serve-static-core'
 import { RoutesRegistryConfig } from './routes-registry.config'
+import environment from './environments/environment'
 
 export class ExpressServerConfig {
     private app: Express
-    private readonly PORT = process.env.APP_PORT || 3000
     private routesRegistryConfig: RoutesRegistryConfig
     
     constructor() {
@@ -32,8 +32,10 @@ export class ExpressServerConfig {
     }
 
     startServer(): void {
-        this.app.listen(this.PORT, () => {
-            console.log('server is connected on port:', this.PORT)
+        this.app.listen(environment.SERVER_PORT, () => {
+            console.log(`server is connected on port: ${environment.SERVER_PORT}`)
+            console.log(`application environment: ${process.env.APP_ENV}`)
+            console.log(`database host: ${environment.DB_HOST}`);                        
         })
     }
 
