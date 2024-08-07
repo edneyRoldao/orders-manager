@@ -53,4 +53,3 @@ CREATE TABLE products_orders (
 	CONSTRAINT FK_product_id	FOREIGN KEY (product_id)	REFERENCES products(id)	,
 	CONSTRAINT KF_order_id 		FOREIGN KEY (order_id)		REFERENCES orders(id)
 )
-
