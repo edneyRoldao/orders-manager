@@ -1,4 +1,4 @@
-import { OrderItemRequest } from './order-item-request'
+import { OrderItemRequest } from './order-item-request.dto'
 
 export type OrderRequest = {
     customerDocument: string

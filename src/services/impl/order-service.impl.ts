@@ -1,5 +1,6 @@
 import { Inject } from '../../config/container.config'
-import { OrderRequest } from '../../dto/order-request'
+import { OrderRequest } from '../../dto/order-request.dto'
+import { OrderResponseDTO } from '../../dto/order-response.dto'
 import { Order } from '../../models/order'
 import { OrderItem } from '../../models/order-item'
 import { OrderRepository } from '../../repositories/order.repository'
@@ -14,7 +15,7 @@ export class OrderServiceImpl implements OrderService {
     @Inject('productSvc') private productService!: ProductService
     @Inject('customerSvc') private customerService!: CustomerService
 
-    async create(orderRequest: OrderRequest): Promise<string> {
+    async create(orderRequest: OrderRequest): Promise<OrderResponseDTO> {
         // todo -> recuperar o customer
         const customer = await this.customerService.getByDocument(orderRequest.customerDocument)
 
@@ -34,12 +35,24 @@ export class OrderServiceImpl implements OrderService {
         }
 
         // todo -> criar a order
-        const orderCode = await this.repository.create(order)
+        const orderSaved = await this.repository.create(order)
 
         // todo -> salvar os itens na tabela a products_orders
-        
+        orderRequest.items.forEach(async itemRequest => {
+            const orderItem: OrderItem = {
+                orderId: orderSaved.id as number,
+                productId: itemRequest.productId,
+                quantity: itemRequest.quantity,
+                total: itemRequest.total,
+                discountPercent: itemRequest.discountPercent            
+            }
+            await this.repository.createOrderItem(orderItem)
+        })        
 
-        return ''
+        return {
+            id: orderSaved.id as number,
+            code: orderSaved.code
+        }
     }
 
 }

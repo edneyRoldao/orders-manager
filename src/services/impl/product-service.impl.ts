@@ -16,20 +16,12 @@ export class ProductServiceImpl implements ProductService {
         const productsResponse: ProductResponseDTO[] = []
 
         for (const product of products) {
-            const category: Category = await this.categoryRepository.getById(product.categoryId)
-            const productResponse: ProductResponseDTO = {
-                id: product.id,
-                name: product.name,
-                value: product.value,
-                stock: product.stock,
-                category
-            }
+            const productResponse = await this.productToProductResponse(product)
             productsResponse.push(productResponse)
         }
 
         return productsResponse
     }
-
 
     async deleteProduct(code: string): Promise<void> {
         await this.repository.deleteProduct(code)
@@ -41,17 +33,8 @@ export class ProductServiceImpl implements ProductService {
 
     async getProductByCode(code: string): Promise<ProductResponseDTO | null> {
         const product = await this.repository.getProductByCode(code)
-
         if (!product) return null
-
-        const category = await this.categoryRepository.getById(product.categoryId)
-        return {
-            id: product.id,
-            name: product.name,
-            value: product.value,
-            stock: product.stock,
-            category
-        }
+        return await this.productToProductResponse(product)
     }
 
     async updateProduct(code: string, product: Product): Promise<void> {
@@ -71,18 +54,23 @@ export class ProductServiceImpl implements ProductService {
         const productsResponse: ProductResponseDTO[] = []
 
         for (const product of products) {
-            const category: Category = await this.categoryRepository.getById(product.categoryId)
-            const productResponse: ProductResponseDTO = {
-                id: product.id,
-                name: product.name,
-                value: product.value,
-                stock: product.stock,
-                category
-            }
+            const productResponse = await this.productToProductResponse(product)
             productsResponse.push(productResponse)
         }
 
         return productsResponse
+    }
+
+    private async productToProductResponse (product: Product): Promise<ProductResponseDTO> {
+        const category: Category = await this.categoryRepository.getById(product.categoryId)
+        return {
+            id: product.id,
+            code: product.code,
+            name: product.name,
+            value: product.value,
+            stock: product.stock,
+            category
+        }
     }
 
 }

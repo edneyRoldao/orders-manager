@@ -3,6 +3,7 @@ import { Product } from '../../models/product'
 import { ProductRepository } from '../product.repository'
 import queries from '../../../files/queries/products-queries.json'
 import { randomUUID } from 'crypto'
+import { AppUtils } from '../../utils/app.utils'
 
 export class ProductRepositoryImpl extends Repository implements ProductRepository {
 
@@ -44,7 +45,7 @@ export class ProductRepositoryImpl extends Repository implements ProductReposito
     }
 
     async createProduct(product: Product): Promise<void> {
-        const uuid: string = randomUUID()
+        const uuid: string = AppUtils.genereteUUISimple()
         await this.datasource.query(queries.create, uuid, product.name, product.value, product.stock, product.categoryId, product.active)
     }
 
