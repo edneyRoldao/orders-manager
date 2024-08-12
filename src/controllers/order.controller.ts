@@ -12,8 +12,14 @@ export class OrderController {
     }
 
     async create(req: Request, res: Response) {
-        const orderCode = await this.service.create(req.body)
-        res.status(201).json({ orderCode })
+        try {
+            const orderCode = await this.service.create(req.body)
+            res.status(201).json({ orderCode })
+            
+        } catch (error: any) {
+            const errors = JSON.parse(error.message)
+            res.status(400).json(errors)
+        }
     }
 
 }

@@ -21,4 +21,10 @@ export class OrderRepositoryImpl extends Repository implements OrderRepository {
         await this.datasource.query(queries.createOrderItem, item.productId, item.orderId, item.quantity, item.discountPercent, item.total)
     }
 
+    async createOrderItemBatch(items: OrderItem[]): Promise<void> {
+        for (const item of items) {
+            await this.createOrderItem(item)
+        }
+    }
+
 }
