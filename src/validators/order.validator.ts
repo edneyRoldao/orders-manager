@@ -6,11 +6,3 @@ export interface OrderValidator {
     validate(orderRequest: OrderRequest): Promise<OrderErrorDTO[]>
 
 }
-
-        // validacoes
-            // validar cpf
-            // validar stock
-            // validar codigo do produto
-            // validar limite de pedidos em aberto por customer
-            // validar desconto
-            // validar preco do produto

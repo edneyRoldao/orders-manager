@@ -6,6 +6,9 @@ import { ProductRepositoryImpl } from '../repositories/impl/product-repository.i
 import { CustomerServiceImpl } from '../services/impl/customer-service.impl'
 import { OrderServiceImpl } from '../services/impl/order-service.impl'
 import { ProductServiceImpl } from '../services/impl/product-service.impl'
+import { OrderValidatorCustomerImpl } from '../validators/impl/order-validator-customer.impl'
+import { OrderValidatorStockImpl } from '../validators/impl/order-validator-stock.impl'
+import { OrderValidatorImpl } from '../validators/impl/order-validator.impl'
 import { MongoAdapter } from './database/mongo-adapter'
 import { MySqlAdapter } from './database/mysql-adapter'
 
@@ -32,6 +35,10 @@ export class Container {
         this.dependencies['productSvc'] = new ProductServiceImpl()
         this.dependencies['orderRepo'] = new OrderRepositoryImpl()
         this.dependencies['orderSvc'] = new OrderServiceImpl()
+
+        // validators
+        this.dependencies['orderValidatorStock'] = new OrderValidatorStockImpl()
+        this.dependencies['orderValidatorCustomer'] = new OrderValidatorCustomerImpl()
     }
 
     getDependency (name: string) {
@@ -39,16 +46,28 @@ export class Container {
         return this.dependencies[name]
     }
 
+    getDependencies (name: string) {
+        const list = []
+        for (const key in this.dependencies) {
+            if (key.startsWith(name)) {
+                list.push(this.dependencies[key])
+            }
+        }
+        return list
+    }
+
 }
 
 export function Inject (name: string) {
 	return function (target: any, propertyKey: string) {
-		target[propertyKey] = new Proxy({}, {
-			get (target: any, propertyKey: string) {
-                const container = Container.getInstance()
-                const dependency = container.getDependency(name)
-                return dependency[propertyKey]
-			}
-		});
+        const container = Container.getInstance()
+        Object.defineProperty(target, propertyKey, { get: () => container.getDependency(name) })
+	}
+}
+
+export function InjectArray (name: string) {
+	return function (target: any, propertyKey: string) {
+        const container = Container.getInstance()
+        Object.defineProperty(target, propertyKey, { get: () => container.getDependencies(name) })
 	}
 }

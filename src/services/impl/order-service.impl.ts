@@ -3,6 +3,7 @@ import { OrderRequest } from '../../dto/order-request.dto'
 import { OrderResponseDTO } from '../../dto/order-response.dto'
 import { Order } from '../../models/order'
 import { OrderRepository } from '../../repositories/order.repository'
+import { OrderValidatorStrategy } from '../../strategies/order-validator.strategy'
 import { AppUtils } from '../../utils/app.utils'
 import { OrderValidator } from '../../validators/order.validator'
 import { CustomerService } from '../customer.service'
@@ -12,10 +13,14 @@ export class OrderServiceImpl implements OrderService {
 
     @Inject('orderRepo') private repository!: OrderRepository
     @Inject('customerSvc') private customerService!: CustomerService
-    @Inject('orderValidator') private orderValidator!: OrderValidator
+    private orderValidatorStrategy!: OrderValidatorStrategy
 
-    async create(orderRequest: OrderRequest): Promise<OrderResponseDTO> {
-        const validationErrors = await this.orderValidator.validate(orderRequest)
+    constructor () {
+        this.orderValidatorStrategy = new OrderValidatorStrategy()
+    }
+
+    async create(orderRequest: OrderRequest): Promise<OrderResponseDTO> {        
+        const validationErrors = await this.orderValidatorStrategy.execute(orderRequest)
 
         if (!!validationErrors && !!validationErrors.length) {
             throw new Error(JSON.stringify(validationErrors))
