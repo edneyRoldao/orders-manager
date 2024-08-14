@@ -60,14 +60,18 @@ export class Container {
 
 export function Inject (name: string) {
 	return function (target: any, propertyKey: string) {
-        const container = Container.getInstance()
-        Object.defineProperty(target, propertyKey, { get: () => container.getDependency(name) })
+        Object.defineProperty(target, propertyKey, { get: () => {
+            const container = Container.getInstance()
+            container.getDependency(name)
+        } })
 	}
 }
 
 export function InjectArray (name: string) {
 	return function (target: any, propertyKey: string) {
-        const container = Container.getInstance()
-        Object.defineProperty(target, propertyKey, { get: () => container.getDependencies(name) })
+        Object.defineProperty(target, propertyKey, { get: () => {
+            const container = Container.getInstance()
+            container.getDependencies(name)
+        } })
 	}
 }
