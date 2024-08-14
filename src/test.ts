@@ -1,8 +1,6 @@
-const obj1:any = {
-    mysql: 'mysql instance',
-    mongo: 'mongo instance'
-}
+const listA = [1,2,3]
+const listB = [4,5,6]
 
-for (const key in obj1) {
-    console.log(key, obj1[key]);    
-}
+const mainList = [...listA, ...listB]
+
+console.log(mainList);

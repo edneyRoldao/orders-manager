@@ -7,8 +7,9 @@ import { CustomerServiceImpl } from '../services/impl/customer-service.impl'
 import { OrderServiceImpl } from '../services/impl/order-service.impl'
 import { ProductServiceImpl } from '../services/impl/product-service.impl'
 import { OrderValidatorCustomerImpl } from '../validators/impl/order-validator-customer.impl'
+import { OrderValidatorPriceImpl } from '../validators/impl/order-validator-price.impl'
+import { OrderValidatorProductImpl } from '../validators/impl/order-validator-product.impl'
 import { OrderValidatorStockImpl } from '../validators/impl/order-validator-stock.impl'
-import { OrderValidatorImpl } from '../validators/impl/order-validator.impl'
 import { MongoAdapter } from './database/mongo-adapter'
 import { MySqlAdapter } from './database/mysql-adapter'
 
@@ -39,6 +40,8 @@ export class Container {
         // validators
         this.dependencies['orderValidatorStock'] = new OrderValidatorStockImpl()
         this.dependencies['orderValidatorCustomer'] = new OrderValidatorCustomerImpl()
+        this.dependencies['orderValidatorProduct'] = new OrderValidatorProductImpl()
+        this.dependencies['orderValidatorPrice'] = new OrderValidatorPriceImpl()        
     }
 
     getDependency (name: string) {
@@ -62,7 +65,7 @@ export function Inject (name: string) {
 	return function (target: any, propertyKey: string) {
         Object.defineProperty(target, propertyKey, { get: () => {
             const container = Container.getInstance()
-            container.getDependency(name)
+            return container.getDependency(name)
         } })
 	}
 }
@@ -71,7 +74,7 @@ export function InjectArray (name: string) {
 	return function (target: any, propertyKey: string) {
         Object.defineProperty(target, propertyKey, { get: () => {
             const container = Container.getInstance()
-            container.getDependencies(name)
+            return container.getDependencies(name)
         } })
 	}
 }

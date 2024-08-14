@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "start": "npm run build && node dist/src/main",
-    "start:dev": "export APP_ENV=dev && nodemon"
+    "start:dev": "export APP_ENV=dev && nodemon",
+    "start:test": "export APP_ENV=dev && npm run build && node dist/src/test.js" 
   },
   "author": "edney",
   "license": "ISC",
