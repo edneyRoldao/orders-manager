@@ -19,13 +19,12 @@ export class OrderServiceImpl implements OrderService {
     }
 
     async create(orderRequest: OrderRequest): Promise<OrderResponseDTO> {        
-        const validationErrors = await this.orderValidatorStrategy.execute(orderRequest, {})
+        const customer = await this.customerService.getByDocument(orderRequest.customerDocument)
+        const validationErrors = await this.orderValidatorStrategy.execute(orderRequest, { customer })
 
         if (!!validationErrors && !!validationErrors.length) {
             throw new Error(JSON.stringify(validationErrors))
         }
-
-        const customer = await this.customerService.getByDocument(orderRequest.customerDocument)
                     
         const order: Order = {
             customerId: customer.id,
@@ -52,6 +51,11 @@ export class OrderServiceImpl implements OrderService {
             id: orderSaved.id as number,
             code: orderSaved.code
         }
+    }
+
+    async getByCode(code: string): Promise<OrderResponseDTO> {
+        const order = await this.repository.getByCode(code)
+        return {} as OrderResponseDTO
     }
 
 }

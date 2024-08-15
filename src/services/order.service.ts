@@ -4,5 +4,6 @@ import { OrderResponseDTO } from '../dto/order-response.dto'
 export interface OrderService {
 
     create(orderRequest: OrderRequest): Promise<OrderResponseDTO>
+    getByCode(code: string): Promise<OrderResponseDTO>
 
 }

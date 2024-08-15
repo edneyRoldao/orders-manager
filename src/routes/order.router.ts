@@ -6,5 +6,6 @@ const router: Router = express.Router()
 const controller = new OrderController()
 
 router.post('/', controller.create)
+router.get('/:code', controller.getByCode)
 
 export default router
