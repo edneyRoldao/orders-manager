@@ -27,8 +27,8 @@ export class OrderController {
     async getByCode(req: Request, res: Response) {
         try {
             const code = req.params.code
-            const orderResponse: OrderResponseDTO = await this.service.getByCode(code)
-            res.status(200).json(orderResponse)
+            const order = await this.service.getByCode(code)
+            res.status(200).json(order)
             
         } catch (error: any) {
             const errors = JSON.parse(error.message)

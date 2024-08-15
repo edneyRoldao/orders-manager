@@ -53,9 +53,8 @@ export class OrderServiceImpl implements OrderService {
         }
     }
 
-    async getByCode(code: string): Promise<OrderResponseDTO> {
-        const order = await this.repository.getByCode(code)
-        return {} as OrderResponseDTO
+    async getByCode(code: string): Promise<Order> {
+        return await this.repository.getByCode(code)
     }
 
 }
