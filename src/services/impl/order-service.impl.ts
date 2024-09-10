@@ -56,5 +56,12 @@ export class OrderServiceImpl implements OrderService {
     async getByCode(code: string): Promise<Order> {
         return await this.repository.getByCode(code)
     }
+    
+    async getAll(pageSize: number, pageNumber: number): Promise<any[]> {
+        // todo - transformar o retorno para um padrao de paginacao
+        // todo - total elementos encontrados na busca
+        const orders = await this.repository.getAll(pageSize, pageNumber)
+        return orders
+    }
 
 }

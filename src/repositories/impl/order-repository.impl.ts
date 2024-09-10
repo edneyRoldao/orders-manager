@@ -49,4 +49,12 @@ export class OrderRepositoryImpl extends Repository implements OrderRepository {
         }
     }
 
+    async getAll(pageSize: number, pageNumber: number): Promise<Order[]> {
+        const offset = (pageNumber - 1) * pageSize
+        const data = await this.datasource.query(queries.getAll, pageSize, offset)
+        const resultSet = data[0]
+        return resultSet
+
+    }
+
 }

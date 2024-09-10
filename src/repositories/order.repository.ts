@@ -7,5 +7,6 @@ export interface OrderRepository {
     getByCode(code: string): Promise<Order>
     createOrderItem(item: OrderItem): Promise<void>
     createOrderItemBatch(items: OrderItem[]): Promise<void>
+    getAll(pageSize: number, pageNumber: number): Promise<Order[]>
 
 }
