@@ -15,17 +15,14 @@ export class OrderRepositoryImpl extends Repository implements OrderRepository {
         const data = await this.datasource.query(queries.getByCodeFull, code)
         const resultSet = data[0] as any[]
 
-        const items: OrderItem[] = resultSet.map(item => {
-            return {
-                productId: item['product_id'],
-                orderId: item['order_id'],
-                quantity: item['quantity'],
-                discountPercent: item['discount_percent'],
-                total: item['value']
-            }
-        })
+        const items: OrderItem[] = this.itemsConverter(resultSet)
+        const order: Order = this.ordersConverter(resultSet, items)
 
-        const order: Order = {
+        return order    
+    }
+
+    private ordersConverter(resultSet: any[], items: OrderItem[]): Order {
+        return {
             id: resultSet[0]['order_id'],
             code: resultSet[0]['order_code'],
             customerId: resultSet[0]['customer'],
@@ -35,8 +32,18 @@ export class OrderRepositoryImpl extends Repository implements OrderRepository {
             total: resultSet.reduce((a, c) => a + parseFloat(c['total']), 0),
             items
         }
+    }
 
-        return order    
+    private itemsConverter(resultSet: any[]): OrderItem[] {
+        return resultSet.map(item => {
+            return {
+                productId: item['product_id'],
+                orderId: item['order_id'],
+                quantity: item['quantity'],
+                discountPercent: item['discount_percent'],
+                total: item['value']
+            }
+        })
     }
 
     async createOrderItem(item: OrderItem): Promise<void> {
@@ -52,7 +59,12 @@ export class OrderRepositoryImpl extends Repository implements OrderRepository {
     async getAll(pageSize: number, pageNumber: number): Promise<Order[]> {
         const offset = (pageNumber - 1) * pageSize
         const data = await this.datasource.query(queries.getAll, pageSize, offset)
-        const resultSet = data[0]
+        const resultSet = data[0] as any[]
+
+        const items: OrderItem[] = this.itemsConverter(resultSet)
+
+        
+
         return resultSet
 
     }
