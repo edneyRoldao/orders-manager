@@ -63,10 +63,24 @@ export class OrderRepositoryImpl extends Repository implements OrderRepository {
 
         const items: OrderItem[] = this.itemsConverter(resultSet)
 
-        
+        // problema: os itens de todos os pedidos estao juntos, precisamos segregar por pedido
 
-        return resultSet
+        // passo 1 -> extrair os orderIds dos items
+        const orderIds = items.map(element => element.orderId)
+        // passo 2 -> eliminar os repetidos
+        const setOrderIds = new Set(orderIds)
 
+        // passo 3 -> iterar sobre os ids de cada pedido e fazer o filtro dos items por id do pedido
+        const orders: Order[] = []
+        setOrderIds.forEach(orderId => {
+            const filteredItems = items.filter(item => item.orderId === orderId)
+            const resultSetFiltered = resultSet.filter(rs => rs['order_id'] === orderId)
+            const order: Order = this.ordersConverter(resultSetFiltered, filteredItems)
+            // passo 4 -> converter para o objeto de order e setar na lista que será retornada
+            orders.push(order)
+        })
+
+        return orders
     }
 
 }
