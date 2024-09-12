@@ -1,6 +1,6 @@
-const listA = [1,2,3]
-const listB = [4,5,6]
+const now  = new Date()
+console.log();
 
-const mainList = [...listA, ...listB]
+const dt = `${now.getFullYear()}-${now.getMonth()}-${now.getUTCDate()} 23:59:59`
 
-console.log(mainList);
+

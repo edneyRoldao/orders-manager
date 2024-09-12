@@ -7,6 +7,7 @@ export interface OrderRepository {
     getByCode(code: string): Promise<Order>
     createOrderItem(item: OrderItem): Promise<void>
     createOrderItemBatch(items: OrderItem[]): Promise<void>
-    getAll(pageSize: number, pageNumber: number): Promise<Order[]>
+    getAll(pageSize: number, pageNumber: number, orderStatus: string, initDate: string, endDate: string): Promise<Order[]>
+    count(orderStatus: string, initDate: string, endDate: string): Promise<number>
 
 }
