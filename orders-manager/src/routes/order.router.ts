@@ -8,5 +8,6 @@ const controller = new OrderController()
 router.post('/', controller.create)
 router.get('/:code', controller.getByCode)
 router.get('/', controller.getAll)
+router.patch('/:code/pay', controller.pay)
 
 export default router

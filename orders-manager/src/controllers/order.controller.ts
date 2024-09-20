@@ -3,6 +3,8 @@ import { Inject } from '../config/container.config'
 import { OrderService } from '../services/order.service'
 import { DateUtils } from '../utils/date.utils'
 
+import axios from 'axios'
+
 export class OrderController {
 
     @Inject('orderSvc')
@@ -12,6 +14,7 @@ export class OrderController {
         this.create = this.create.bind(this)
         this.getByCode = this.getByCode.bind(this)
         this.getAll = this.getAll.bind(this)
+        this.pay = this.pay.bind(this)
     }
 
     async create(req: Request, res: Response) {
@@ -45,6 +48,16 @@ export class OrderController {
         const createdEnd = req.query.createdEnd as string || DateUtils.getCurrentDate()
         const orders = await this.service.getAll(pageSize, pageNumber, orderStatus, createdInit, createdEnd)
         res.status(200).json(orders)
+    }
+
+    async pay(req: Request, res: Response) {
+        const orderCode = req.params.code
+        console.log('codigo do pedido:', orderCode);
+
+        // call orders-payment
+        const response = await axios.post('http://localhost:3030/orders-payment/pay', {})
+
+        res.status(200).json('teste pagar')   
     }
 
 }
